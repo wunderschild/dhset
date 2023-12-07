@@ -3,7 +3,7 @@ project(dhset CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 
-find_package(nlohmann_json 3.11.2 REQUIRED)
+find_package(nlohmann_json 3.10.5 REQUIRED)
 
 add_library(dhset SHARED
         src/vendor/redismodule.h
