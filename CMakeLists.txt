@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 20)
 
 find_package(nlohmann_json 3.10.5 REQUIRED)
 
-set(CMAKE_CXX_FLAGS "-Wall -Wextra")
+set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wno-missing-field-initializers")
 set(CMAKE_CXX_FLAGS_DEBUG "-g")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
@@ -18,14 +18,18 @@ add_library(dhset SHARED
         src/exec/ValueGetter.cpp
         src/exec/ValueGetter.hpp
         src/values.hpp
-        src/config/ModuleConfig.hpp
-        src/config/ModuleConfig.cpp
+        src/config/ModuleState.hpp
+        src/config/ModuleState.cpp
         src/config/NotificationMode.hpp
-        src/config/Serializer.hpp
         src/config/NotificationMode.cpp
+        src/config/Serializer.hpp
         src/config/Serializer.cpp
         src/config/KeyPattern.cpp
         src/config/KeyPattern.hpp
+        src/config/ShrinkStrategy.hpp
+        src/config/ShrinkStrategy.cpp
+        src/config/PrimitiveParams.hpp
+        src/config/PrimitiveParams.cpp
 )
 
 

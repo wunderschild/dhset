@@ -6,6 +6,6 @@
 
 #pragma once
 
-#include "vendor/redismodule.h"
+#include <vendor/redismodule.h>
 
 extern "C" int DiffHSet(RedisModuleCtx* ctx, RedisModuleString** argv, int argc);

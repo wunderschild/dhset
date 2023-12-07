@@ -6,8 +6,8 @@
 
 #include "util.hpp"
 
-#include <algorithm>
-
+#include <iostream>
+#include <nlohmann/json.hpp>
 
 auto fromRedisString(const RedisModuleString* str) -> std::string {
 	if (str == nullptr) {
@@ -36,6 +36,10 @@ auto debugSend(RedisModuleCtx* ctx, const std::string_view message) -> void {
 
 	RedisModule_FreeString(ctx, channel);
 	RedisModule_FreeString(ctx, rMessage);
+}
+
+auto debugLogObject(const nlohmann::json& message) -> void {
+	std::cerr << message << std::endl;
 }
 
 auto publish(

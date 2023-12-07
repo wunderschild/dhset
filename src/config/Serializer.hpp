@@ -6,8 +6,12 @@
 
 #pragma once
 
+constexpr auto SERIALIZE_WITH_OPTION = "serialize-with";
+
 enum class Serializer : int {
 	JSON = 0,
 	CBOR = 1,
 	MSGPack = 2,
 };
+
+auto registerSerializerConfigOption(RedisModuleCtx* ctx) -> bool;

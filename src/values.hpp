@@ -6,7 +6,7 @@
  */
 
 #pragma once
-#include "vendor/redismodule.h"
+#include <vendor/redismodule.h>
 
 inline constexpr auto MODULE_NAME = "dhset";
 inline constexpr auto MODULE_VER = 1;

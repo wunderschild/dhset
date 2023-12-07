@@ -9,7 +9,7 @@
 #include <sstream>
 #include <nlohmann/json.hpp>
 
-#include "config.hpp"
+#include "config/ModuleState.hpp"
 #include "exec/ValueGetter.hpp"
 #include "util/util.hpp"
 
@@ -35,7 +35,7 @@ auto serializePayload(RedisModuleCtx* ctx, const json& data, const Serializer se
 
 auto publishNotification(
 	RedisModuleCtx* ctx,
-	const RedisModuleString* keyName,
+	std::string_view key,
 	const RedisHash& oldState,
 	const RedisHash& newState,
 	const ModuleConfig& config
@@ -46,7 +46,6 @@ auto publishNotification(
 
 	auto event = json();
 
-	auto key = fromRedisString(keyName);
 	event["k"] = key;
 	event["o"] = oldState;
 	event["u"] = newState;
@@ -82,11 +81,44 @@ auto computeNewState(
 
 	const auto size = updates.size();
 
-	for (auto i = 0; i < size; i += 2) {
+	for (size_t i = 0; i < size; i += 2) {
 		updateHash[updates[i]] = updates[i + 1];
 	}
 
 	return updateHash;
+}
+
+auto shouldReportKey(const std::string& key) {
+	if (ModuleStateHolder::config.keyPattern.getSource().empty()) {
+		return true;
+	}
+
+	if (!ModuleStateHolder::config.enableKeyCaching) {
+		return std::regex_match(
+			std::begin(key), std::end(key),
+			ModuleStateHolder::config.keyPattern
+		);
+	}
+
+	debugLogObject(ModuleStateHolder::acceptedKeys);
+	if (ModuleStateHolder::acceptedKeys.contains(key)) {
+		return true;
+	}
+
+	if (std::regex_match(
+		std::begin(key), std::end(key),
+		ModuleStateHolder::config.keyPattern
+	)) {
+		ensureKeyCacheSizeInLimits();
+		ModuleStateHolder::acceptedKeys.insert(key);
+		return true;
+	}
+
+	return false;
+}
+
+auto invokeActual(RedisModuleCtx* ctx, RedisModuleString** argv, const int argc) -> RedisModuleCallReply* {
+	return RedisModule_Call(ctx, "HSET", "!Ev", argv + 1, argc - 1);
 }
 
 auto DiffHSet(RedisModuleCtx* ctx, RedisModuleString** argv, const int argc) -> int {
@@ -94,11 +126,19 @@ auto DiffHSet(RedisModuleCtx* ctx, RedisModuleString** argv, const int argc) -> 
 		return RedisModule_WrongArity(ctx);
 	}
 
+	const auto key = fromRedisString(argv[1]);
+
+	if (!shouldReportKey(key)) {
+		RedisModule_ReplyWithCallReply(ctx, invokeActual(ctx, argv, argc));
+
+		return REDISMODULE_OK;
+	}
+
 	const auto getter = ValueGetter(ctx);
 
 	const auto oldState = getter.readHashKey(argv[1]);
 
-	const auto reply = RedisModule_Call(ctx, "HSET", "!Ev", argv + 1, argc - 1);
+	const auto reply = invokeActual(ctx, argv, argc);
 
 	if (
 		ValueGetter::readIntegerReply(reply) >= 0
@@ -111,7 +151,7 @@ auto DiffHSet(RedisModuleCtx* ctx, RedisModuleString** argv, const int argc) -> 
 
 		const auto newState = computeNewState(updates);
 
-		publishNotification(ctx, argv[1], oldState, newState, ConfigHolder::config);
+		publishNotification(ctx, key, oldState, newState, ModuleStateHolder::config);
 	}
 
 	RedisModule_ReplyWithCallReply(ctx, reply);

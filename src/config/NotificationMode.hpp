@@ -5,6 +5,9 @@
  */
 
 #pragma once
+#include <vendor/redismodule.h>
+
+constexpr auto NOTIFICATION_MODE_OPTION = "notification-mode";
 
 enum class NotificationMode : int {
 	PER_KEY = 1,
@@ -35,3 +38,5 @@ inline auto operator>(const NotificationMode lh, const int rh) {
 inline auto operator<=(const NotificationMode lh, const int rh) {
 	return static_cast<int>(lh) <= rh;
 }
+
+auto registerNotificationModeConfigOption(RedisModuleCtx* ctx) -> bool;

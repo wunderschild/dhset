@@ -7,8 +7,9 @@
 #pragma once
 
 #include <string>
+#include <nlohmann/json_fwd.hpp>
 
-#include "vendor/redismodule.h"
+#include <vendor/redismodule.h>
 
 auto fromRedisString(const RedisModuleString* str) -> std::string;
 
@@ -17,6 +18,8 @@ auto toRedisString(std::string_view str) -> RedisModuleString*;
 auto toRedisString(std::string_view str, RedisModuleCtx* ctx) -> RedisModuleString*;
 
 auto debugSend(RedisModuleCtx* ctx, std::string_view message) -> void;
+
+auto debugLogObject(const nlohmann::json& message) -> void;
 
 auto publish(RedisModuleCtx* ctx, std::string_view channel, std::string_view data) -> void;
 

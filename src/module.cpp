@@ -6,21 +6,13 @@
 
 #define REDISMODULE_API extern "C"
 
-#include <cerrno>
-#include <csignal>
-#include <cstring>
-#include <system_error>
-
-#include "config.hpp"
+#include <vendor/redismodule.h>
 #include "values.hpp"
-#include "vendor/redismodule.h"
 
 #include "command/DiffHSet.hpp"
-#include "util/util.hpp"
+#include "config/PrimitiveParams.hpp"
 
-constexpr auto commandName = "DHSET";
-
-extern "C" int RedisModule_OnLoad(RedisModuleCtx *ctx, RedisModuleString **argv, int argc) {
+extern "C" [[maybe_unused]] int RedisModule_OnLoad(RedisModuleCtx* ctx, RedisModuleString**, int) {
 	if (RedisModule_Init(ctx, MODULE_NAME, MODULE_VER, REDISMODULE_APIVER_1) == REDISMODULE_ERR) {
 		return REDISMODULE_ERR;
 	}
@@ -33,7 +25,7 @@ extern "C" int RedisModule_OnLoad(RedisModuleCtx *ctx, RedisModuleString **argv,
 			"write deny-oom",
 			1, 1, 1
 		) != REDISMODULE_OK
-		) {
+	) {
 		RedisModule_Log(
 			ctx, REDISMODULE_LOGLEVEL_WARNING,
 			"Failed to register command!"
@@ -46,8 +38,14 @@ extern "C" int RedisModule_OnLoad(RedisModuleCtx *ctx, RedisModuleString **argv,
 	}
 
 	if (
-		!registerSerializerConfig(ctx) || !registerNotificationModeConfig(ctx)
-		) {
+		!registerSerializerConfigOption(ctx)
+		|| !registerNotificationModeConfigOption(ctx)
+		|| !registerKeyPatternConfigOption(ctx)
+		|| !registerKeyCacheShrinkConfigOption(ctx)
+		|| !registerKeyCacheSizeConfigOption(ctx)
+		|| !registerEnableKeyCachingConfigOption(ctx)
+	) {
+		RedisModule_Log(ctx, REDISMODULE_LOGLEVEL_WARNING, "Failed to register config options!");
 		return REDISMODULE_ERR;
 	}
 
