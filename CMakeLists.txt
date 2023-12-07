@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.27)
 project(dhset CXX)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
 find_package(nlohmann_json 3.10.5 REQUIRED)
 
@@ -10,7 +10,6 @@ set(CMAKE_CXX_FLAGS_DEBUG "-g")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 add_library(dhset SHARED
-        src/vendor/redismodule.h
         src/module.cpp
         src/command/DiffHSet.cpp
         src/command/DiffHSet.hpp
@@ -19,14 +18,19 @@ add_library(dhset SHARED
         src/exec/ValueGetter.cpp
         src/exec/ValueGetter.hpp
         src/values.hpp
-        src/config.hpp
-        src/config.cpp
+        src/config/ModuleConfig.hpp
+        src/config/ModuleConfig.cpp
         src/config/NotificationMode.hpp
         src/config/Serializer.hpp
+        src/config/NotificationMode.cpp
+        src/config/Serializer.cpp
+        src/config/KeyPattern.cpp
+        src/config/KeyPattern.hpp
 )
 
+
 target_link_libraries(dhset PRIVATE nlohmann_json::nlohmann_json)
-target_include_directories(dhset PRIVATE src/)
+target_include_directories(dhset PRIVATE "${PROJECT_SOURCE_DIR}/src" "${PROJECT_SOURCE_DIR}/include")
 
 if ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
     add_custom_command(
