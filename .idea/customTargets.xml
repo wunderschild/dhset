@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CLionExternalBuildManager">
+    <target id="fc497900-d915-4065-92c5-7e65cadc8f50" name="redis-server" defaultType="TOOL">
+      <configuration id="2f318859-6b79-419e-a6c2-bcf0503ef938" name="redis-server" toolchainName="Default" />
+    </target>
+  </component>
+</project>
