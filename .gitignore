@@ -1,0 +1,4 @@
+cmake-build-*
+debug/*.pid
+debug/*.log
+debug/*.rdb
