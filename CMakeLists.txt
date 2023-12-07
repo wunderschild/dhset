@@ -5,6 +5,10 @@ set(CMAKE_CXX_STANDARD 17)
 
 find_package(nlohmann_json 3.10.5 REQUIRED)
 
+set(CMAKE_CXX_FLAGS "-Wall -Wextra")
+set(CMAKE_CXX_FLAGS_DEBUG "-g")
+set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+
 add_library(dhset SHARED
         src/vendor/redismodule.h
         src/module.cpp
@@ -21,8 +25,49 @@ add_library(dhset SHARED
         src/config/Serializer.hpp
 )
 
-target_include_directories(dhset PRIVATE src/)
 target_link_libraries(dhset PRIVATE nlohmann_json::nlohmann_json)
+target_include_directories(dhset PRIVATE src/)
+
+if ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+    add_custom_command(
+            TARGET dhset
+            POST_BUILD
+            COMMAND ${CMAKE_COMMAND}
+            ARGS -E copy "${PROJECT_BINARY_DIR}/libdhset.so" "${PROJECT_SOURCE_DIR}/debug/"
+    )
+
+    if (DEFINED DEVENV_PREPARE_REDIS)
+        set(
+                DEVENV_REDIS_VERSION "7.2.3"
+                CACHE STRING "Redis version"
+        )
+        set(
+                DEVENV_REDIS_SHA256 afd656dbc18a886f9a1cc08a550bf5eb89de0d431e713eba3ae243391fb008a6
+                CACHE STRING "SHA256 of redis-${DEVENV_REDIS_VERSION}.tar.gz"
+        )
+
+        find_program(MAKE_COMMAND make)
+
+        file(DOWNLOAD
+                "https://github.com/redis/redis/archive/refs/tags/${DEVENV_REDIS_VERSION}.tar.gz"
+                "${PROJECT_SOURCE_DIR}/misc/redis.tar.gz"
+                SHOW_PROGRESS
+                EXPECTED_HASH SHA256=${DEVENV_REDIS_SHA256}
+        )
+        execute_process(COMMAND
+                ${CMAKE_COMMAND} -E tar xzvf redis.tar.gz
+                WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/misc"
+        )
+        execute_process(COMMAND
+                ${MAKE_COMMAND} noopt
+                WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/misc/redis-${DEVENV_REDIS_VERSION}"
+        )
+        execute_process(COMMAND
+                ${MAKE_COMMAND} install "PREFIX=${PROJECT_SOURCE_DIR}/debug/redis"
+                WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/misc/redis-${DEVENV_REDIS_VERSION}"
+        )
+    endif ()
+endif ()
 
 install(TARGETS dhset
         LIBRARY
