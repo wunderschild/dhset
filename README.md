@@ -88,7 +88,8 @@ no event will be generated and the original reply will be returned.
 
 ### Configuration
 
-There are two configuration options for this module:
+You can configure the module by setting these config options in `redis.conf`
+or by executing `CONFIG SET`:
 
 * `dhset.serialize-with [default=json]`
 
@@ -107,7 +108,42 @@ There are two configuration options for this module:
   ```redis
     CONFIG SET dhset.notification-mode "key channel"
   ```
+* `dhset.key-pattern [default=""]`
 
----------------
+  A regular expression to select keys that should publish notifications.
+  E.g. let the pattern be `model.*`. Executing the following statements:
 
----------------
+  ```redis
+    DHSET model:user id 12 name wunder
+    DHSET session:12 expires 2023-12-07T12:33Z
+  ```
+
+  Will only give one notification for `model:user`, but not for `session:12`.
+  If pattern is set to an empty string, filtering is disabled.
+  > **NOTICE:** The pattern is matched against __the entire key__, not just a part of it that might match,
+  > i.e. key `model:user` wouldn't match against `^model` or `:user$` patterns.
+* `dhset.enable-key-caching [default=no]`
+
+  You might want to enable this option if you're planning to do a lot
+  of `DHSET`'s with key matching enabled (`dhset.key-pattern` is set),
+  especially in cases where potential number of distinct keys is not very big.
+  Instead of matching the same key against the same pattern every `DHSET` with that key,
+  it stores the matching result in a cache. This cache is instance-local in a sense that
+  it does not rely on Redis for caching. In fact, this is just a hashset of keys in the module's memory space.
+
+  Enabling caching has no effect if key matching is disabled.
+
+* `dhset.matched-key-cache-size [default=128]`
+
+  Since the key cache is just an in-memory object we obviously need to limit its size.
+  And there it is, a config option just for that.
+
+* `dhset.shrink-matched-key-cache [default=flush]`
+
+  Cache size limit enforcement strategy. If the cache have reached the size limit
+  when a new key arrives, one of the following actions might be performed:
+    * `flush` - the cache gets emptied completely
+    * `halve` - half of cache entries get removed
+    * `one-out` - exactly one cache entry gets removed
+  
+  Due to the nature of hash tables, the order in which cache entries are removed is not guaranteed.
