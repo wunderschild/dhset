@@ -6,7 +6,7 @@ including the value before the update, the key being updated and the update itse
 
 ## Building & Installation
 
-**DiffHSet** requires CMake and a C++ compiler with C++17 support to be built.
+**DiffHSet** requires CMake and a C++ compiler with C++20 support to be built.
 
 The only external dependency is [nlohmann/json](https://json.nlohmann.me/).
 
