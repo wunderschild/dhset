@@ -10,9 +10,11 @@
 #include "values.hpp"
 
 #include "command/DiffHSet.hpp"
+#include "config/CommandFilter.hpp"
 #include "config/PrimitiveParams.hpp"
+#include "util/util.hpp"
 
-extern "C" [[maybe_unused]] int RedisModule_OnLoad(RedisModuleCtx* ctx, RedisModuleString**, int) {
+extern "C" [[maybe_unused]] int RedisModule_OnLoad(RedisModuleCtx* ctx, RedisModuleString** argv, int argc) {
 	if (RedisModule_Init(ctx, MODULE_NAME, MODULE_VER, REDISMODULE_APIVER_1) == REDISMODULE_ERR) {
 		return REDISMODULE_ERR;
 	}
@@ -47,6 +49,19 @@ extern "C" [[maybe_unused]] int RedisModule_OnLoad(RedisModuleCtx* ctx, RedisMod
 	) {
 		RedisModule_Log(ctx, REDISMODULE_LOGLEVEL_WARNING, "Failed to register config options!");
 		return REDISMODULE_ERR;
+	}
+
+	if (argc > 0) {
+		ModuleStateHolder::config.commandFilterTarget = toLower(fromRedisString(argv[0]));
+		ModuleStateHolder::commandNameEncoded = toRedisString(COMMAND_NAME);
+
+		if (const auto filter = RedisModule_RegisterCommandFilter(
+			ctx,
+			commandFilter,
+			REDISMODULE_CMDFILTER_NOSELF
+		); filter == nullptr) {
+			RedisModule_Log(ctx, REDISMODULE_LOGLEVEL_WARNING, "Failed to register command filter!");
+		}
 	}
 
 	RedisModule_LoadConfigs(ctx);

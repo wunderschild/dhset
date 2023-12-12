@@ -24,3 +24,7 @@ auto debugLogObject(const nlohmann::json& message) -> void;
 auto publish(RedisModuleCtx* ctx, std::string_view channel, std::string_view data) -> void;
 
 auto publish(RedisModuleCtx* ctx, std::string_view channel, RedisModuleString* data) -> void;
+
+auto toLower(std::string_view) -> std::string;
+
+auto strIEquals(std::string_view a, std::string_view b) -> bool;

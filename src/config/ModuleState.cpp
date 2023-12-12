@@ -10,6 +10,7 @@
 
 ModuleConfig ModuleStateHolder::config = ModuleConfig{};
 std::unordered_set<std::string> ModuleStateHolder::acceptedKeys = {};
+RedisModuleString* ModuleStateHolder::commandNameEncoded = nullptr;
 
 auto ensureKeyCacheSizeInLimits() -> void {
 	if (

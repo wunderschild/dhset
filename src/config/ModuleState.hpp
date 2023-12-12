@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <optional>
 #include <regex>
 #include <unordered_set>
 
@@ -24,6 +25,8 @@ typedef struct ModuleConfig {
 	bool enableKeyCaching = false;
 	ShrinkStrategy shrinkMatchedKeyCache = ShrinkStrategy::FLUSH;
 	long long matchedKeyCacheLimit = 1000;
+
+	std::optional<std::string> commandFilterTarget = std::nullopt;
 } ModuleConfig;
 
 const static inline auto DEFAULT_CONFIG = ModuleConfig{};
@@ -32,6 +35,7 @@ class ModuleStateHolder {
 public:
 	static ModuleConfig config;
 	static std::unordered_set<std::string> acceptedKeys;
+	static RedisModuleString* commandNameEncoded;
 };
 
 auto ensureKeyCacheSizeInLimits() -> void;

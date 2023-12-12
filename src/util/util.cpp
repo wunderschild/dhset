@@ -61,3 +61,25 @@ auto publish(RedisModuleCtx* ctx, std::string_view channel, RedisModuleString* d
 
 	RedisModule_FreeString(ctx, rChannel);
 }
+
+auto toLower(std::string_view str) -> std::string {
+	std::string receiver;
+
+	std::ranges::transform(str, std::back_inserter(receiver), [](auto chr) {
+		return std::tolower(chr);
+	});
+
+	return receiver;
+}
+
+auto chrIEquals(const char a, const char b) {
+	return std::tolower(a) == std::tolower(b);
+}
+
+auto strIEquals(const std::string_view a, const std::string_view b) -> bool {
+	return std::equal(
+		std::begin(a), std::end(a),
+		std::begin(b),
+		chrIEquals
+	);
+}
