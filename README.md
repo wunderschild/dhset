@@ -41,6 +41,24 @@ MODULE LOAD /var/lib/redis/libdhset.so
 
 ## Usage
 
+### Startup options
+
+This module provides only one startup option - the command that will be replaced with `DHSET` command.
+E.g. if the following configuration is used to load DHSet:
+
+```
+loadmodule /var/lib/redis/libdhset.so hmset
+```
+
+Then, the `HMSET` Redis command will be replaced with `DHSET` on invocation.
+
+If the option will not be provided, no command will be hooked.
+
+> **NOTE:** This option blindly replaces **any** command that will be given as an argument, without any checks.
+> Be aware to not accidentally replace e.g. plain `SET` command with it, it will just break it.
+
+### Config options
+
 By default, this module will publish notifications to `__modevent@{db}__:dhset` channel.
 Messages are serialized with JSON by default and have the following structure:
 
@@ -145,5 +163,5 @@ or by executing `CONFIG SET`:
     * `flush` - the cache gets emptied completely
     * `halve` - half of cache entries get removed
     * `one-out` - exactly one cache entry gets removed
-  
+
   Due to the nature of hash tables, the order in which cache entries are removed is not guaranteed.
