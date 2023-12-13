@@ -5,6 +5,7 @@
 #include "CommandFilter.hpp"
 
 #include "ModuleState.hpp"
+#include "values.hpp"
 #include "util/util.hpp"
 
 void commandFilter(RedisModuleCommandFilterCtx* fctx) {
@@ -19,10 +20,9 @@ void commandFilter(RedisModuleCommandFilterCtx* fctx) {
 		if (cmdNameLen != filterTargetValue.length()) return;
 
 		if (
-			ModuleStateHolder::commandNameEncoded != nullptr
-			&& strIEquals(cmdName, filterTargetValue)
+			strIEquals(cmdName, filterTargetValue)
 		) {
-			RedisModule_CommandFilterArgReplace(fctx, 0, ModuleStateHolder::commandNameEncoded);
+			RedisModule_CommandFilterArgReplace(fctx, 0, toRedisString(COMMAND_NAME));
 		}
 	}
 }

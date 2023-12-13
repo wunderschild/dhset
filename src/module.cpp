@@ -53,7 +53,6 @@ extern "C" [[maybe_unused]] int RedisModule_OnLoad(RedisModuleCtx* ctx, RedisMod
 
 	if (argc > 0) {
 		ModuleStateHolder::config.commandFilterTarget = toLower(fromRedisString(argv[0]));
-		ModuleStateHolder::commandNameEncoded = toRedisString(COMMAND_NAME);
 
 		if (const auto filter = RedisModule_RegisterCommandFilter(
 			ctx,

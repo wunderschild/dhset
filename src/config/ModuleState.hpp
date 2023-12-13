@@ -35,7 +35,6 @@ class ModuleStateHolder {
 public:
 	static ModuleConfig config;
 	static std::unordered_set<std::string> acceptedKeys;
-	static RedisModuleString* commandNameEncoded;
 };
 
 auto ensureKeyCacheSizeInLimits() -> void;
