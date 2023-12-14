@@ -11,8 +11,6 @@
 inline constexpr auto MODULE_NAME = "dhset";
 inline constexpr auto MODULE_VER = 1;
 
-inline constexpr auto COMMAND_NAME = "DHSET";
-
 namespace detail {
 	inline constexpr RedisModuleCommandArg* BLOCK_SUBARGS = (RedisModuleCommandArg[]){
 		RedisModuleCommandArg{

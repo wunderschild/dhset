@@ -74,20 +74,6 @@ auto publishNotification(
 	RedisModule_FreeString(ctx, payload);
 }
 
-auto computeNewState(
-	const std::vector<std::string>& updates
-) {
-	auto updateHash = RedisHash();
-
-	const auto size = updates.size();
-
-	for (size_t i = 0; i < size; i += 2) {
-		updateHash[updates[i]] = updates[i + 1];
-	}
-
-	return updateHash;
-}
-
 auto shouldReportKey(const std::string& key) {
 	if (ModuleStateHolder::config.keyPattern.getSource().empty()) {
 		return true;
@@ -100,25 +86,27 @@ auto shouldReportKey(const std::string& key) {
 		);
 	}
 
-	debugLogObject(ModuleStateHolder::acceptedKeys);
 	if (ModuleStateHolder::acceptedKeys.contains(key)) {
-		return true;
+		return ModuleStateHolder::acceptedKeys[key];
 	}
 
-	if (std::regex_match(
+	const auto matches = std::regex_match(
 		std::begin(key), std::end(key),
 		ModuleStateHolder::config.keyPattern
-	)) {
-		ensureKeyCacheSizeInLimits();
-		ModuleStateHolder::acceptedKeys.insert(key);
-		return true;
-	}
+	);
 
-	return false;
+	ensureKeyCacheSizeInLimits();
+
+	return ModuleStateHolder::acceptedKeys[key] = matches;
 }
 
-auto invokeActual(RedisModuleCtx* ctx, RedisModuleString** argv, const int argc) -> RedisModuleCallReply* {
-	return RedisModule_Call(ctx, "HSET", "!Ev", argv + 1, argc - 1);
+auto invokeActual(
+	std::string_view command,
+	RedisModuleCtx* ctx,
+	RedisModuleString** argv,
+	const int argc
+) -> RedisModuleCallReply* {
+	return RedisModule_Call(ctx, command.data(), "!Ev", argv + 1, argc - 1);
 }
 
 auto DiffHSet(RedisModuleCtx* ctx, RedisModuleString** argv, const int argc) -> int {
@@ -128,8 +116,10 @@ auto DiffHSet(RedisModuleCtx* ctx, RedisModuleString** argv, const int argc) -> 
 
 	const auto key = fromRedisString(argv[1]);
 
+	const auto& cmdActual = ModuleStateHolder::config.delegateTo;
+
 	if (!shouldReportKey(key)) {
-		RedisModule_ReplyWithCallReply(ctx, invokeActual(ctx, argv, argc));
+		RedisModule_ReplyWithCallReply(ctx, invokeActual(cmdActual, ctx, argv, argc));
 
 		return REDISMODULE_OK;
 	}
@@ -138,18 +128,21 @@ auto DiffHSet(RedisModuleCtx* ctx, RedisModuleString** argv, const int argc) -> 
 
 	const auto oldState = getter.readHashKey(argv[1]);
 
-	const auto reply = invokeActual(ctx, argv, argc);
+	const auto reply = invokeActual(cmdActual, ctx, argv, argc);
 
 	if (
-		ValueGetter::readIntegerReply(reply) >= 0
+		const auto replyType = RedisModule_CallReplyType(reply);
+		replyType != REDISMODULE_REPLY_UNKNOWN
+		&& replyType != REDISMODULE_REPLY_ERROR
 	) {
-		auto updates = std::vector<std::string>();
+		auto newState = RedisHash();
 
-		for (auto i = 2; i < argc; i++) {
-			updates.emplace_back(fromRedisString(argv[i]));
+		for (auto i = 2; i < argc; i += 2) {
+			newState.insert({
+				fromRedisString(argv[i]),
+				bytesFromRedisString(argv[i + 1])
+			});
 		}
-
-		const auto newState = computeNewState(updates);
 
 		publishNotification(ctx, key, oldState, newState, ModuleStateHolder::config);
 	}

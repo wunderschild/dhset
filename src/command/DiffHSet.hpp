@@ -8,4 +8,6 @@
 
 #include <vendor/redismodule.h>
 
+inline constexpr auto DHSET_COMMAND_NAME = "DHSET";
+
 extern "C" int DiffHSet(RedisModuleCtx* ctx, RedisModuleString** argv, int argc);
