@@ -4,8 +4,8 @@
 
 #include "CommandFilter.hpp"
 
-#include "ModuleState.hpp"
-#include "values.hpp"
+#include "DiffHSet.hpp"
+#include "config/ModuleState.hpp"
 #include "util/util.hpp"
 
 void commandFilter(RedisModuleCommandFilterCtx* fctx) {
@@ -22,7 +22,7 @@ void commandFilter(RedisModuleCommandFilterCtx* fctx) {
 		if (
 			strIEquals(cmdName, filterTargetValue)
 		) {
-			RedisModule_CommandFilterArgReplace(fctx, 0, toRedisString(COMMAND_NAME));
+			RedisModule_CommandFilterArgReplace(fctx, 0, toRedisString(DHSET_COMMAND_NAME));
 		}
 	}
 }
