@@ -10,7 +10,9 @@
 #include "values.hpp"
 
 #include "command/DiffHSet.hpp"
-#include "config/CommandFilter.hpp"
+#include "command/CommandFilter.hpp"
+#include "command/DHSetGetCache.hpp"
+#include "config/DelegateTo.hpp"
 #include "config/PrimitiveParams.hpp"
 #include "util/util.hpp"
 
@@ -22,7 +24,7 @@ extern "C" [[maybe_unused]] int RedisModule_OnLoad(RedisModuleCtx* ctx, RedisMod
 	if (
 		RedisModule_CreateCommand(
 			ctx,
-			COMMAND_NAME,
+			DHSET_COMMAND_NAME,
 			DiffHSet,
 			"write deny-oom",
 			1, 1, 1
@@ -35,7 +37,22 @@ extern "C" [[maybe_unused]] int RedisModule_OnLoad(RedisModuleCtx* ctx, RedisMod
 		return REDISMODULE_ERR;
 	}
 
-	if (const auto command = RedisModule_GetCommand(ctx, COMMAND_NAME); command != nullptr) {
+	if (
+		RedisModule_CreateCommand(
+			ctx,
+			DHSET_GET_CACHE_COMMAND_NAME,
+			DiffHSetGetCache,
+			"deny-oom",
+			0, 0, 0
+		) != REDISMODULE_OK
+	) {
+		RedisModule_Log(
+			ctx, REDISMODULE_LOGLEVEL_WARNING,
+			"Failed to register debug command!"
+		);
+	}
+
+	if (const auto command = RedisModule_GetCommand(ctx, DHSET_COMMAND_NAME); command != nullptr) {
 		RedisModule_SetCommandInfo(command, &COMMAND_INFO);
 	}
 
@@ -46,6 +63,7 @@ extern "C" [[maybe_unused]] int RedisModule_OnLoad(RedisModuleCtx* ctx, RedisMod
 		|| !registerKeyCacheShrinkConfigOption(ctx)
 		|| !registerKeyCacheSizeConfigOption(ctx)
 		|| !registerEnableKeyCachingConfigOption(ctx)
+		|| !registerDelegateToConfigOption(ctx)
 	) {
 		RedisModule_Log(ctx, REDISMODULE_LOGLEVEL_WARNING, "Failed to register config options!");
 		return REDISMODULE_ERR;
