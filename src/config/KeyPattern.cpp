@@ -9,18 +9,18 @@
 #include "ModuleState.hpp"
 #include "util/util.hpp"
 
-KeyPattern::KeyPattern(const std::string& source) : source(source), std::regex(source.data()) {
+KeyPattern::KeyPattern(const std::string& source) : std::regex(source.data()), source(source) {
 }
 
 auto KeyPattern::getSource() const -> std::string {
 	return source;
 }
 
-auto getKeyPattern(const char*, void*) {
+auto getKeyPattern(const char* /*unused*/, void* /*unused*/) {
 	return toRedisString(ModuleStateHolder::config.keyPattern.getSource());
 }
 
-auto setKeyPattern(const char*, RedisModuleString* value, void*,
+auto setKeyPattern(const char* /*unused*/, RedisModuleString* value, void* /*unused*/,
                    RedisModuleString** err) {
 	try {
 		ModuleStateHolder::config.keyPattern = KeyPattern(fromRedisString(value));

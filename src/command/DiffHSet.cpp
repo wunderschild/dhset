@@ -13,17 +13,17 @@
 #include "exec/ValueGetter.hpp"
 #include "util/util.hpp"
 
-using json = nlohmann::json;
+using Json = nlohmann::json;
 
-auto serializePayload(RedisModuleCtx* ctx, const json& data, const Serializer serializer) {
+auto serializePayload(RedisModuleCtx* ctx, const Json& data, const Serializer serializer) {
 	auto serializedPayload = std::string();
 
 	switch (serializer) {
 		case Serializer::CBOR:
-			json::to_cbor(data, serializedPayload);
+			Json::to_cbor(data, serializedPayload);
 			break;
 		case Serializer::MSGPack:
-			json::to_msgpack(data, serializedPayload);
+			Json::to_msgpack(data, serializedPayload);
 			break;
 		case Serializer::JSON:
 		default:
@@ -44,13 +44,13 @@ auto publishNotification(
 		return;
 	}
 
-	auto event = json();
+	auto event = Json();
 
 	event["k"] = key;
 	event["o"] = oldState;
 	event["u"] = newState;
 
-	const auto payload = serializePayload(ctx, event, config.serializer);
+	auto* const payload = serializePayload(ctx, event, config.serializer);
 
 	if ((config.notificationMode & NotificationMode::PER_KEY) > 0) {
 		const auto channelName = (
@@ -101,7 +101,7 @@ auto shouldReportKey(const std::string& key) {
 }
 
 auto invokeActual(
-	std::string_view command,
+	const std::string_view command,
 	RedisModuleCtx* ctx,
 	RedisModuleString** argv,
 	const int argc
@@ -109,7 +109,7 @@ auto invokeActual(
 	return RedisModule_Call(ctx, command.data(), "!Ev", argv + 1, argc - 1);
 }
 
-auto DiffHSet(RedisModuleCtx* ctx, RedisModuleString** argv, const int argc) -> int {
+auto commandDiffHSet(RedisModuleCtx* ctx, RedisModuleString** argv, const int argc) -> int {
 	if (argc < 3 || argc % 2 != 0) {
 		return RedisModule_WrongArity(ctx);
 	}
@@ -128,7 +128,7 @@ auto DiffHSet(RedisModuleCtx* ctx, RedisModuleString** argv, const int argc) -> 
 
 	const auto oldState = getter.readHashKey(argv[1]);
 
-	const auto reply = invokeActual(cmdActual, ctx, argv, argc);
+	auto* const reply = invokeActual(cmdActual, ctx, argv, argc);
 
 	if (
 		const auto replyType = RedisModule_CallReplyType(reply);

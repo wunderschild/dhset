@@ -7,14 +7,14 @@
 #include "ModuleState.hpp"
 #include "util/util.hpp"
 
-auto getSerializer(const char*, void*) {
+auto getSerializer(const char* /*unused*/, void* /*unused*/) {
 	return static_cast<int>(ModuleStateHolder::config.serializer);
 }
 
 auto setSerializer(
-	const char*,
+	const char* /*unused*/,
 	int value,
-	void*,
+	void* /*unused*/,
 	RedisModuleString** err
 ) {
 	switch (const auto serializer = static_cast<Serializer>(value)) {
@@ -45,8 +45,8 @@ auto registerSerializerConfigOption(RedisModuleCtx* ctx) -> bool {
 		SERIALIZE_WITH_OPTION,
 		static_cast<int>(DEFAULT_CONFIG.serializer),
 		REDISMODULE_CONFIG_DEFAULT,
-		enumNames,
-		enumValues,
+		static_cast<const char **>(enumNames),
+		static_cast<const int *>(enumValues),
 		3,
 		getSerializer,
 		setSerializer,

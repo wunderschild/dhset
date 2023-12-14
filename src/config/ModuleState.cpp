@@ -8,8 +8,9 @@
 
 #include "../util/util.hpp"
 
-ModuleConfig ModuleStateHolder::config = ModuleConfig{};
-std::unordered_map<std::string, bool> ModuleStateHolder::acceptedKeys = {};
+ModuleConfig ModuleStateHolder::config = ModuleConfig{}; // NOLINT(*-avoid-non-const-global-variables, *-err58-cpp)
+std::unordered_map<std::string, bool> ModuleStateHolder::acceptedKeys = // NOLINT(*-avoid-non-const-global-variables)
+	{};
 
 auto ensureKeyCacheSizeInLimits() -> void {
 	if (

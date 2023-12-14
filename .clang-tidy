@@ -1,0 +1,90 @@
+---
+# Enable ALL the things! Except not really
+# resources-non-private-member-variables-in-classes: the options don't do anything
+Checks: >-
+  *,
+  -resources-no-recursion,
+  -google-*,
+  -altera-*,
+  -*-avoid-c-arrays,
+  -fuchsia-*,
+  fuchsia-multiple-inheritance,
+  -llvm-header-guard,
+  -llvm-include-order,
+  -llvmlibc-*,
+  -resources-non-private-member-variables-in-classes,
+  -cppcoreguidelines-pro-bounds-pointer-arithmetic,
+  -bugprone-easily-swappable-parameters
+WarningsAsErrors: '*'
+CheckOptions:
+  'bugprone-argument-comment.StrictMode': true
+  'bugprone-argument-comment.CommentBoolLiterals': true
+  'bugprone-misplaced-widening-cast.CheckImplicitCasts': true
+  'bugprone-sizeof-expression.WarnOnSizeOfIntegerExpression': true
+  'bugprone-suspicious-string-compare.WarnOnLogicalNotComparison': true
+  'readability-simplify-boolean-expr.ChainedConditionalReturn': true
+  'readability-simplify-boolean-expr.ChainedConditionalAssignment': true
+  'readability-uniqueptr-delete-release.PreferResetCall': true
+  'cppcoreguidelines-init-variables.MathHeader': '<cmath>'
+  'cppcoreguidelines-narrowing-conversions.PedanticMode': true
+  'readability-else-after-return.WarnOnUnfixable': true
+  'readability-else-after-return.WarnOnConditionVariables': true
+  'readability-inconsistent-declaration-parameter-name.Strict': true
+  'readability-qualified-auto.AddConstToQualified': true
+  'readability-redundant-access-specifiers.CheckFirstDeclaration': true
+  'readability-identifier-naming.AbstractClassCase': 'CamelCase'
+  'readability-identifier-naming.ClassCase': 'CamelCase'
+  'readability-identifier-naming.ClassConstantCase': 'camelBack'
+  'readability-identifier-naming.ClassMemberCase': 'camelBack'
+  'readability-identifier-naming.ClassMethodCase': 'camelBack'
+  'readability-identifier-naming.ConstantCase': 'camelBack'
+  'readability-identifier-naming.ConstantMemberCase': 'camelBack'
+  'readability-identifier-naming.ConstantParameterCase': 'camelBack'
+  'readability-identifier-naming.ConstantPointerParameterCase': 'camelBack'
+  'readability-identifier-naming.ConstexprFunctionCase': 'camelBack'
+  'readability-identifier-naming.ConstexprMethodCase': 'camelBack'
+  'readability-identifier-naming.EnumCase': 'CamelCase'
+  'readability-identifier-naming.EnumConstantCase': 'UPPER_CASE'
+  'readability-identifier-naming.FunctionCase': 'camelBack'
+  'readability-identifier-naming.GlobalConstantCase': 'UPPER_CASE'
+  'readability-identifier-naming.GlobalConstantPointerCase': 'camelBack'
+  'readability-identifier-naming.GlobalFunctionCase': 'camelBack'
+  'readability-identifier-naming.GlobalPointerCase': 'camelBack'
+  'readability-identifier-naming.GlobalVariableCase': 'camelBack'
+  'readability-identifier-naming.InlineNamespaceCase': 'camelBack'
+  'readability-identifier-naming.LocalConstantCase': 'camelBack'
+  'readability-identifier-naming.LocalConstantPointerCase': 'camelBack'
+  'readability-identifier-naming.LocalPointerCase': 'camelBack'
+  'readability-identifier-naming.LocalVariableCase': 'camelBack'
+  'readability-identifier-naming.MacroDefinitionCase': 'UPPER_CASE'
+  'readability-identifier-naming.MemberCase': 'camelBack'
+  'readability-identifier-naming.MethodCase': 'camelBack'
+  'readability-identifier-naming.NamespaceCase': 'camelBack'
+  'readability-identifier-naming.ParameterCase': 'camelBack'
+  'readability-identifier-naming.ParameterPackCase': 'camelBack'
+  'readability-identifier-naming.PointerParameterCase': 'camelBack'
+  'readability-identifier-naming.PrivateMemberCase': 'camelBack'
+  'readability-identifier-naming.PrivateMemberPrefix': ''
+  'readability-identifier-naming.PrivateMethodCase': 'camelBack'
+  'readability-identifier-naming.ProtectedMemberCase': 'camelBack'
+  'readability-identifier-naming.ProtectedMemberPrefix': ''
+  'readability-identifier-naming.ProtectedMethodCase': 'camelBack'
+  'readability-identifier-naming.PublicMemberCase': 'camelBack'
+  'readability-identifier-naming.PublicMethodCase': 'camelBack'
+  'readability-identifier-naming.ScopedEnumConstantCase': 'CamelCase'
+  'readability-identifier-naming.StaticConstantCase': 'CamelCase'
+  'readability-identifier-naming.StaticVariableCase': 'camelBack'
+  'readability-identifier-naming.StructCase': 'CamelCase'
+  'readability-identifier-naming.TemplateParameterCase': 'CamelCase'
+  'readability-identifier-naming.TemplateTemplateParameterCase': 'CamelCase'
+  'readability-identifier-naming.TypeAliasCase': 'CamelCase'
+  'readability-identifier-naming.TypedefCase': 'camelBack'
+  'readability-identifier-naming.TypeTemplateParameterCase': 'CamelCase'
+  'readability-identifier-naming.UnionCase': 'CamelCase'
+  'readability-identifier-naming.ValueTemplateParameterCase': 'CamelCase'
+  'readability-identifier-naming.VariableCase': 'camelBack'
+  'readability-identifier-naming.VirtualMethodCase': 'camelBack'
+  'readability-identifier-length.IgnoredVariableNames': 'id'
+  'readability-identifier-length.IgnoredParameterNames': 'id'
+  'readability-identifier-naming.TypeTemplateParameterIgnoredRegexp': 'expr-type'
+  'modernize-concat-nested-namespaces': true

@@ -9,11 +9,11 @@
 
 #include "util/util.hpp"
 
-auto getKeyCacheFlushStrategy(const char*, void*) {
+auto getKeyCacheFlushStrategy(const char* /*unused*/, void* /*unused*/) {
 	return static_cast<int>(ModuleStateHolder::config.shrinkMatchedKeyCache);
 }
 
-auto setKeyCacheFlushStrategy(const char*, int value, void*, RedisModuleString** err) {
+auto setKeyCacheFlushStrategy(const char* /*unused*/, int value, void* /*unused*/, RedisModuleString** err) {
 	switch (const auto strat = static_cast<ShrinkStrategy>(value)) {
 		case ShrinkStrategy::FLUSH:
 		case ShrinkStrategy::HALVE:
@@ -41,7 +41,8 @@ auto registerKeyCacheShrinkConfigOption(RedisModuleCtx* ctx) -> bool {
 		SHRINK_KEY_CACHE_OPTION,
 		static_cast<int>(DEFAULT_CONFIG.shrinkMatchedKeyCache),
 		REDISMODULE_CONFIG_DEFAULT,
-		enumNames, enumValues,
+		static_cast<const char **>(enumNames),
+		static_cast<const int *>(enumValues),
 		3,
 		getKeyCacheFlushStrategy,
 		setKeyCacheFlushStrategy,

@@ -37,7 +37,7 @@ namespace detail {
 		},
 		nullptr
 	};
-}
+} // namespace detail
 
 inline constexpr auto COMMAND_INFO = RedisModuleCommandInfo{
 	.version = REDISMODULE_COMMAND_INFO_VERSION,

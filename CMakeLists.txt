@@ -1,13 +1,18 @@
 cmake_minimum_required(VERSION 3.22)
 project(dhset CXX)
 
+set(GLOBAL PROPERTY USE_FOLDERS ON)
+
+include(cmake/ClangTidy.cmake)
+
 set(CMAKE_CXX_STANDARD 20)
-
-find_package(nlohmann_json 3.10.5 REQUIRED)
-
 set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wno-missing-field-initializers")
 set(CMAKE_CXX_FLAGS_DEBUG "-g")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+find_package(nlohmann_json 3.10.5 REQUIRED)
 
 add_library(dhset SHARED
         src/module.cpp
@@ -39,9 +44,11 @@ add_library(dhset SHARED
         src/command/DHSetGetCache.hpp
 )
 
+clang_tidy(dhset)
 
 target_link_libraries(dhset PRIVATE nlohmann_json::nlohmann_json)
-target_include_directories(dhset PRIVATE "${PROJECT_SOURCE_DIR}/src" "${PROJECT_SOURCE_DIR}/include")
+target_include_directories(dhset PRIVATE "${PROJECT_SOURCE_DIR}/src")
+target_include_directories(dhset SYSTEM PRIVATE "${PROJECT_SOURCE_DIR}/include")
 
 if ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
     add_custom_command(

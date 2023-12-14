@@ -34,4 +34,4 @@ auto publish(RedisModuleCtx* ctx, std::string_view channel, RedisModuleString* d
 
 auto toLower(std::string_view) -> std::string;
 
-auto strIEquals(std::string_view a, std::string_view b) -> bool;
+auto strIEquals(std::string_view str1, std::string_view str2) -> bool;

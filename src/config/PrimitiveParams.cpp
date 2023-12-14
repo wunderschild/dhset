@@ -10,11 +10,11 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
 constexpr auto KEY_CACHE_SIZE_MIN = 8;
 constexpr auto KEY_CACHE_SIZE_MAX = 65536;
 
-auto getKeyCacheSize(const char*, void*) {
+auto getKeyCacheSize(const char* /*unused*/, void* /*unused*/) {
 	return ModuleStateHolder::config.matchedKeyCacheLimit;
 }
 
-auto setKeyCacheSize(const char*, long long value, void*, RedisModuleString** err) {
+auto setKeyCacheSize(const char* /*unused*/, long long value, void* /*unused*/, RedisModuleString** err) {
 	if (value < KEY_CACHE_SIZE_MIN || value > KEY_CACHE_SIZE_MAX) {
 		*err = RedisModule_CreateStringPrintf(
 			nullptr,
@@ -51,11 +51,11 @@ auto registerKeyCacheSizeConfigOption(RedisModuleCtx* ctx) -> bool {
 	return true;
 }
 
-auto getEnableKeyCaching(const char*, void*) {
+auto getEnableKeyCaching(const char* /*unused*/, void* /*unused*/) {
 	return static_cast<int>(ModuleStateHolder::config.enableKeyCaching);
 }
 
-auto setEnableKeyCaching(const char*, int value, void*, RedisModuleString**) {
+auto setEnableKeyCaching(const char* /*unused*/, int value, void* /*unused*/, RedisModuleString** /*unused*/) {
 	ModuleStateHolder::config.enableKeyCaching = value > 0;
 
 	return REDISMODULE_OK;
@@ -65,7 +65,7 @@ auto registerEnableKeyCachingConfigOption(RedisModuleCtx* ctx) -> bool {
 	if (auto res = RedisModule_RegisterBoolConfig(
 		ctx,
 		ENABLE_KEY_CACHING_OPTION,
-		DEFAULT_CONFIG.enableKeyCaching,
+		static_cast<int>(DEFAULT_CONFIG.enableKeyCaching),
 		REDISMODULE_CONFIG_DEFAULT,
 		getEnableKeyCaching,
 		setEnableKeyCaching,

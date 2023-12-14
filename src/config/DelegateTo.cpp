@@ -13,11 +13,11 @@
 
 #include "util/ranges.hpp"
 
-auto getDelegateTo(const char*, void*) {
+auto getDelegateTo(const char* /*unused*/, void* /*unused*/) {
 	return toRedisString(ModuleStateHolder::config.delegateTo);
 }
 
-auto setDelegateTo(const char*, RedisModuleString* value, void*, RedisModuleString** err) {
+auto setDelegateTo(const char* /*unused*/, RedisModuleString* value, void* /*unused*/, RedisModuleString** err) {
 	const auto valueIn = toLower(fromRedisString(value));
 
 	if (

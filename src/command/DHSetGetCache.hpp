@@ -10,4 +10,4 @@
 
 inline constexpr auto DHSET_GET_CACHE_COMMAND_NAME = "DHSET-GETCACHE";
 
-auto DiffHSetGetCache(RedisModuleCtx* ctx, RedisModuleString** argv, int argc) -> int;
+auto commandDiffHSetGetCache(RedisModuleCtx* ctx, RedisModuleString** argv, int argc) -> int;

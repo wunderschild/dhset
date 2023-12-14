@@ -10,7 +10,7 @@ ValueGetter::ValueGetter(RedisModuleCtx* ctx) : ctx(ctx) {
 }
 
 auto ValueGetter::readString(RedisModuleString* keyName) const -> std::string {
-	const auto reply = RedisModule_Call(ctx, "GET", "s", keyName);
+	auto *const reply = RedisModule_Call(ctx, "GET", "s", keyName);
 
 	if (RedisModule_CallReplyType(reply) != REDISMODULE_REPLY_STRING) {
 		return {};
@@ -24,7 +24,7 @@ auto ValueGetter::readString(RedisModuleString* keyName) const -> std::string {
 }
 
 auto ValueGetter::readHashKey(RedisModuleString* keyName) const -> RedisHash {
-	const auto reply = RedisModule_Call(ctx, "HGETALL", "s", keyName);
+	auto *const reply = RedisModule_Call(ctx, "HGETALL", "s", keyName);
 
 	auto result = readHashReply(reply);
 
@@ -61,8 +61,8 @@ auto ValueGetter::readStringReply(RedisModuleCallReply* reply) -> std::string {
 		return {};
 	}
 
-	std::size_t len;
-	const auto ptr = RedisModule_CallReplyStringPtr(reply, &len);
+	std::size_t len = 0;
+	const auto *const ptr = RedisModule_CallReplyStringPtr(reply, &len);
 
 	return {ptr, len};
 }
@@ -70,8 +70,8 @@ auto ValueGetter::readStringReply(RedisModuleCallReply* reply) -> std::string {
 auto ValueGetter::readBytesReply(RedisModuleCallReply* reply) -> ByteArray {
 	auto receiver = ByteArray();
 
-	std::size_t len;
-	const auto ptr = RedisModule_CallReplyStringPtr(reply, &len);
+	std::size_t len = 0;
+	const auto *const ptr = RedisModule_CallReplyStringPtr(reply, &len);
 
 	for (std::size_t i = 0; i < len; i++) {
 		receiver.emplace_back(ptr[i]);
@@ -89,7 +89,7 @@ auto ValueGetter::readIntegerReply(RedisModuleCallReply* reply) -> long long {
 }
 
 auto ValueGetter::getKeyType(RedisModuleString* keyName) const -> int {
-	const auto handle = RedisModule_OpenKey(ctx, keyName, REDISMODULE_READ | REDISMODULE_OPEN_KEY_NOEFFECTS);
+	auto *const handle = RedisModule_OpenKey(ctx, keyName, REDISMODULE_READ | REDISMODULE_OPEN_KEY_NOEFFECTS);
 
 	const auto keyType = RedisModule_KeyType(handle);
 

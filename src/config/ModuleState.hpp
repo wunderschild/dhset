@@ -15,7 +15,7 @@
 #include "Serializer.hpp"
 #include "ShrinkStrategy.hpp"
 
-typedef struct ModuleConfig {
+struct ModuleConfig {
 	Serializer serializer = Serializer::JSON;
 
 	NotificationMode notificationMode = NotificationMode::PER_CHANNEL;
@@ -29,7 +29,7 @@ typedef struct ModuleConfig {
 	long long matchedKeyCacheLimit = 1000;
 
 	std::optional<std::string> commandFilterTarget = std::nullopt;
-} ModuleConfig;
+};
 
 const static inline auto DEFAULT_CONFIG = ModuleConfig{};
 

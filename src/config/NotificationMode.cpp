@@ -6,11 +6,11 @@
 
 #include "ModuleState.hpp"
 
-auto getNotificationMode(const char*, void*) {
+auto getNotificationMode(const char* /*unused*/, void* /*unused*/) {
 	return static_cast<int>(ModuleStateHolder::config.notificationMode);
 }
 
-auto setNotificationMode(const char*, int value, void*, RedisModuleString**) {
+auto setNotificationMode(const char* /*unused*/, int value, void* /*unused*/, RedisModuleString** /*unused*/) {
 	ModuleStateHolder::config.notificationMode =
 		value & (NotificationMode::PER_KEY | NotificationMode::PER_CHANNEL);
 
@@ -19,7 +19,7 @@ auto setNotificationMode(const char*, int value, void*, RedisModuleString**) {
 
 auto registerNotificationModeConfigOption(RedisModuleCtx* ctx) -> bool {
 	const char* enumNames[] = {"key", "channel"};
-	constexpr int enumValues[] = {
+	const int enumValues[] = {
 		static_cast<int>(NotificationMode::PER_KEY),
 		static_cast<int>(NotificationMode::PER_CHANNEL),
 	};
@@ -29,8 +29,8 @@ auto registerNotificationModeConfigOption(RedisModuleCtx* ctx) -> bool {
 		NOTIFICATION_MODE_OPTION,
 		static_cast<int>(DEFAULT_CONFIG.notificationMode),
 		REDISMODULE_CONFIG_BITFLAGS,
-		enumNames,
-		enumValues,
+		static_cast<const char **>(enumNames),
+		static_cast<const int *>(enumValues),
 		2,
 		getNotificationMode,
 		setNotificationMode,

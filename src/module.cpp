@@ -16,7 +16,11 @@
 #include "config/PrimitiveParams.hpp"
 #include "util/util.hpp"
 
-extern "C" [[maybe_unused]] int RedisModule_OnLoad(RedisModuleCtx* ctx, RedisModuleString** argv, int argc) {
+extern "C" [[maybe_unused]] int RedisModule_OnLoad( // NOLINT(*-use-trailing-return-type, *-identifier-naming)
+	RedisModuleCtx* ctx,
+	RedisModuleString** argv,
+	int argc
+) {
 	if (RedisModule_Init(ctx, MODULE_NAME, MODULE_VER, REDISMODULE_APIVER_1) == REDISMODULE_ERR) {
 		return REDISMODULE_ERR;
 	}
@@ -25,7 +29,7 @@ extern "C" [[maybe_unused]] int RedisModule_OnLoad(RedisModuleCtx* ctx, RedisMod
 		RedisModule_CreateCommand(
 			ctx,
 			DHSET_COMMAND_NAME,
-			DiffHSet,
+			commandDiffHSet,
 			"write deny-oom",
 			1, 1, 1
 		) != REDISMODULE_OK
@@ -41,7 +45,7 @@ extern "C" [[maybe_unused]] int RedisModule_OnLoad(RedisModuleCtx* ctx, RedisMod
 		RedisModule_CreateCommand(
 			ctx,
 			DHSET_GET_CACHE_COMMAND_NAME,
-			DiffHSetGetCache,
+			commandDiffHSetGetCache,
 			"deny-oom",
 			0, 0, 0
 		) != REDISMODULE_OK
@@ -52,7 +56,7 @@ extern "C" [[maybe_unused]] int RedisModule_OnLoad(RedisModuleCtx* ctx, RedisMod
 		);
 	}
 
-	if (const auto command = RedisModule_GetCommand(ctx, DHSET_COMMAND_NAME); command != nullptr) {
+	if (auto* const command = RedisModule_GetCommand(ctx, DHSET_COMMAND_NAME); command != nullptr) {
 		RedisModule_SetCommandInfo(command, &COMMAND_INFO);
 	}
 
@@ -70,9 +74,10 @@ extern "C" [[maybe_unused]] int RedisModule_OnLoad(RedisModuleCtx* ctx, RedisMod
 	}
 
 	if (argc > 0) {
-		ModuleStateHolder::config.commandFilterTarget = toLower(fromRedisString(argv[0]));
+		ModuleStateHolder::config.commandFilterTarget =
+			toLower(fromRedisString(argv[0])); // NOLINT(*-pro-bounds-pointer-arithmetic)
 
-		if (const auto filter = RedisModule_RegisterCommandFilter(
+		if (auto *const filter = RedisModule_RegisterCommandFilter(
 			ctx,
 			commandFilter,
 			REDISMODULE_CMDFILTER_NOSELF

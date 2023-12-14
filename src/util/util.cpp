@@ -15,12 +15,12 @@ auto bytesFromRedisString(const RedisModuleString* str) -> ByteArray {
 		return {};
 	}
 
-	size_t len;
-	const auto buf = RedisModule_StringPtrLen(str, &len);
+	std::size_t len = 0;
+	const auto* const buf = RedisModule_StringPtrLen(str, &len);
 
 	auto receiver = ByteArray();
 
-	for (auto i = 0; i < len; ++i) {
+	for (std::size_t i = 0; i < len; ++i) {
 		receiver.emplace_back(buf[i]);
 	}
 
@@ -32,8 +32,8 @@ auto fromRedisString(const RedisModuleString* str) -> std::string {
 		return {};
 	}
 
-	size_t len;
-	const auto buf = RedisModule_StringPtrLen(str, &len);
+	std::size_t len = 0;
+	const auto* const buf = RedisModule_StringPtrLen(str, &len);
 
 	return {buf, len};
 }
@@ -51,8 +51,8 @@ auto toRedisString(const std::string_view str, RedisModuleCtx* ctx) -> RedisModu
 }
 
 auto debugSend(RedisModuleCtx* ctx, const std::string_view message) -> void {
-	const auto channel = toRedisString("dhset", ctx);
-	const auto rMessage = toRedisString(message, ctx);
+	auto* const channel = toRedisString("dhset", ctx);
+	auto* const rMessage = toRedisString(message, ctx);
 
 	RedisModule_PublishMessage(ctx, channel, rMessage);
 
@@ -61,23 +61,23 @@ auto debugSend(RedisModuleCtx* ctx, const std::string_view message) -> void {
 }
 
 auto debugLogObject(const nlohmann::json& message) -> void {
-	std::cerr << message << std::endl;
+	std::cerr << message << '\n';
 }
 
 auto publish(
 	RedisModuleCtx* ctx,
-	std::string_view channel,
-	std::string_view data
+	const std::string_view channel,
+	const std::string_view data
 ) -> void {
-	const auto rData = toRedisString(channel, ctx);
+	auto* const rData = toRedisString(data, ctx);
 
 	publish(ctx, channel, rData);
 
 	RedisModule_FreeString(ctx, rData);
 }
 
-auto publish(RedisModuleCtx* ctx, std::string_view channel, RedisModuleString* data) -> void {
-	const auto rChannel = toRedisString(channel, ctx);
+auto publish(RedisModuleCtx* ctx, const std::string_view channel, RedisModuleString* data) -> void {
+	auto* const rChannel = toRedisString(channel, ctx);
 
 	RedisModule_PublishMessage(ctx, rChannel, data);
 
@@ -94,14 +94,14 @@ auto toLower(std::string_view str) -> std::string {
 	return receiver;
 }
 
-auto chrIEquals(const char a, const char b) {
-	return std::tolower(a) == std::tolower(b);
+auto chrIEquals(const char chr1, const char chr2) {
+	return std::tolower(chr1) == std::tolower(chr2);
 }
 
-auto strIEquals(const std::string_view a, const std::string_view b) -> bool {
+auto strIEquals(const std::string_view str1, const std::string_view str2) -> bool {
 	return std::equal(
-		std::begin(a), std::end(a),
-		std::begin(b),
+		std::begin(str1), std::end(str1),
+		std::begin(str2),
 		chrIEquals
 	);
 }

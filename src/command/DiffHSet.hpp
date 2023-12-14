@@ -10,4 +10,4 @@
 
 inline constexpr auto DHSET_COMMAND_NAME = "DHSET";
 
-extern "C" int DiffHSet(RedisModuleCtx* ctx, RedisModuleString** argv, int argc);
+auto commandDiffHSet(RedisModuleCtx* ctx, RedisModuleString** argv, int argc) -> int;
