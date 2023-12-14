@@ -12,6 +12,7 @@
 #include "config/ModuleState.hpp"
 #include "exec/ValueGetter.hpp"
 #include "util/util.hpp"
+#include "util/stringstream.hpp"
 
 using Json = nlohmann::json;
 
@@ -26,8 +27,12 @@ auto serializePayload(RedisModuleCtx* ctx, const Json& data, const Serializer se
 			Json::to_msgpack(data, serializedPayload);
 			break;
 		case Serializer::JSON:
-		default:
+		default: {
+			auto datastr = std::ostringstream();
+
+			datastr << data;
 			serializedPayload = (std::ostringstream() << data).str();
+		}
 	}
 
 	return toRedisString(serializedPayload, ctx);

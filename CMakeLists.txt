@@ -16,13 +16,11 @@ find_package(nlohmann_json 3.10.5 REQUIRED)
 
 add_library(dhset SHARED
         src/module.cpp
-        src/command/DiffHSet.cpp
-        src/command/DiffHSet.hpp
-        src/util/util.cpp
-        src/util/util.hpp
+        src/values.hpp
+
         src/exec/ValueGetter.cpp
         src/exec/ValueGetter.hpp
-        src/values.hpp
+
         src/config/ModuleState.hpp
         src/config/ModuleState.cpp
         src/config/NotificationMode.hpp
@@ -35,13 +33,20 @@ add_library(dhset SHARED
         src/config/ShrinkStrategy.cpp
         src/config/PrimitiveParams.hpp
         src/config/PrimitiveParams.cpp
-        src/command/CommandFilter.cpp
-        src/command/CommandFilter.hpp
         src/config/DelegateTo.cpp
         src/config/DelegateTo.hpp
-        src/util/ranges.hpp
-        src/command/DHSetGetCache.cpp
+
+        src/command/DiffHSet.hpp
+        src/command/DiffHSet.cpp
+        src/command/CommandFilter.hpp
+        src/command/CommandFilter.cpp
         src/command/DHSetGetCache.hpp
+        src/command/DHSetGetCache.cpp
+
+        src/util/ranges.hpp
+        src/util/stringstream.hpp
+        src/util/util.hpp
+        src/util/util.cpp
 )
 
 clang_tidy(dhset)

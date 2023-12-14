@@ -11,11 +11,11 @@
 #include <sstream>
 
 template<typename Range>
-auto joinToString(Range r, std::string_view delimiter) {
+auto joinToString(Range range, std::string_view delimiter) {
 	std::ostringstream receiver;
 
-	for (auto iter = std::begin(r); iter != std::end(r); ++iter) {
-		if (iter == std::begin(r)) {
+	for (auto iter = std::begin(range); iter != std::end(range); ++iter) {
+		if (iter == std::begin(range)) {
 			receiver << *iter;
 		} else {
 			receiver << delimiter << *iter;

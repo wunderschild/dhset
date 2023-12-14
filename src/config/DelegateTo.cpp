@@ -8,10 +8,12 @@
 #include "util/util.hpp"
 
 #include <algorithm>
+// ReSharper disable once CppUnusedIncludeDirective
 #include <ranges>
 #include <string_view>
 
 #include "util/ranges.hpp"
+#include "util/stringstream.hpp"
 
 auto getDelegateTo(const char* /*unused*/, void* /*unused*/) {
 	return toRedisString(ModuleStateHolder::config.delegateTo);
