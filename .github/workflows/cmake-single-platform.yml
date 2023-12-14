@@ -43,9 +43,15 @@ jobs:
         with:
           name: libdhset.so
           path: ${{github.workspace}}/build/libdhset*
-      - name: Upload Release Artifact
+      - name: Prepare Release Artifacts
+        run: |
+          cd ${{github.workspace}}
+          mkdir artifacts
+          mv build/libdhset*.so artifacts/
+          mv build/libdhset.so.sha256 artifacts/
+      - name: Upload Release Artifacts
         uses: Roang-zero1/github-upload-release-artifacts-action@v3
         with:
-          args: "build/libdhset*.so build/libdhset.so.sha256"
+          args: "artifacts/"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
