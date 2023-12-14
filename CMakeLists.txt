@@ -30,8 +30,13 @@ add_library(dhset SHARED
         src/config/ShrinkStrategy.cpp
         src/config/PrimitiveParams.hpp
         src/config/PrimitiveParams.cpp
-        src/config/CommandFilter.cpp
-        src/config/CommandFilter.hpp
+        src/command/CommandFilter.cpp
+        src/command/CommandFilter.hpp
+        src/config/DelegateTo.cpp
+        src/config/DelegateTo.hpp
+        src/util/ranges.hpp
+        src/command/DHSetGetCache.cpp
+        src/command/DHSetGetCache.hpp
 )
 
 
