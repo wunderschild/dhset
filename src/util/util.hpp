@@ -7,13 +7,20 @@
 #pragma once
 
 #include <string>
+#include <nlohmann/json.hpp>
 #include <nlohmann/json_fwd.hpp>
 
 #include <vendor/redismodule.h>
 
+using ByteArray = nlohmann::json::binary_t;
+
+auto bytesFromRedisString(const RedisModuleString* str) -> ByteArray;
+
 auto fromRedisString(const RedisModuleString* str) -> std::string;
 
 auto toRedisString(std::string_view str) -> RedisModuleString*;
+
+auto toRedisString(const std::ostringstream& str) -> RedisModuleString*;
 
 auto toRedisString(std::string_view str, RedisModuleCtx* ctx) -> RedisModuleString*;
 

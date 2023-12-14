@@ -7,7 +7,25 @@
 #include "util.hpp"
 
 #include <iostream>
+#include <sstream>
 #include <nlohmann/json.hpp>
+
+auto bytesFromRedisString(const RedisModuleString* str) -> ByteArray {
+	if (str == nullptr) {
+		return {};
+	}
+
+	size_t len;
+	const auto buf = RedisModule_StringPtrLen(str, &len);
+
+	auto receiver = ByteArray();
+
+	for (auto i = 0; i < len; ++i) {
+		receiver.emplace_back(buf[i]);
+	}
+
+	return receiver;
+}
 
 auto fromRedisString(const RedisModuleString* str) -> std::string {
 	if (str == nullptr) {
@@ -22,6 +40,10 @@ auto fromRedisString(const RedisModuleString* str) -> std::string {
 
 auto toRedisString(const std::string_view str) -> RedisModuleString* {
 	return toRedisString(str, nullptr);
+}
+
+auto toRedisString(const std::ostringstream& str) -> RedisModuleString* {
+	return toRedisString(str.str());
 }
 
 auto toRedisString(const std::string_view str, RedisModuleCtx* ctx) -> RedisModuleString* {

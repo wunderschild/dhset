@@ -8,11 +8,13 @@
 #pragma once
 
 #include <string>
-#include <unordered_map>
+#include <vector>
 
 #include <vendor/redismodule.h>
 
-using RedisHash = std::unordered_map<std::string, std::string>;
+#include "util/util.hpp"
+
+using RedisHash = std::map<std::string, ByteArray>;
 
 class ValueGetter {
 	RedisModuleCtx* ctx;
@@ -27,6 +29,8 @@ public:
 	[[nodiscard]] static auto readHashReply(RedisModuleCallReply* reply) -> RedisHash;
 
 	[[nodiscard]] static auto readStringReply(RedisModuleCallReply* reply) -> std::string;
+
+	[[nodiscard]] static auto readBytesReply(RedisModuleCallReply* reply) -> ByteArray;
 
 	[[nodiscard]] static auto readIntegerReply(RedisModuleCallReply* reply) -> long long;
 

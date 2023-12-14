@@ -40,17 +40,17 @@ auto ValueGetter::readHashReply(RedisModuleCallReply* reply) -> RedisHash {
 		return {};
 	}
 
-	const auto count = RedisModule_CallReplyLength(reply);
+	const std::size_t count = RedisModule_CallReplyLength(reply);
 
 	if (count % 2 != 0) {
 		return {};
 	}
 
-	for (auto i = 0; i < count; i += 2) {
+	for (std::size_t i = 0; i < count; i += 2) {
 		const auto key = readStringReply(RedisModule_CallReplyArrayElement(reply, i));
-		const auto value = readStringReply(RedisModule_CallReplyArrayElement(reply, i + 1));
+		const auto value = readBytesReply(RedisModule_CallReplyArrayElement(reply, i + 1));
 
-		result[key] = value;
+		result.insert({key, value});
 	}
 
 	return result;
@@ -61,10 +61,23 @@ auto ValueGetter::readStringReply(RedisModuleCallReply* reply) -> std::string {
 		return {};
 	}
 
-	size_t len;
+	std::size_t len;
 	const auto ptr = RedisModule_CallReplyStringPtr(reply, &len);
 
 	return {ptr, len};
+}
+
+auto ValueGetter::readBytesReply(RedisModuleCallReply* reply) -> ByteArray {
+	auto receiver = ByteArray();
+
+	std::size_t len;
+	const auto ptr = RedisModule_CallReplyStringPtr(reply, &len);
+
+	for (std::size_t i = 0; i < len; i++) {
+		receiver.emplace_back(ptr[i]);
+	}
+
+	return receiver;
 }
 
 auto ValueGetter::readIntegerReply(RedisModuleCallReply* reply) -> long long {
