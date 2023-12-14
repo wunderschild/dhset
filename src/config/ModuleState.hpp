@@ -20,6 +20,8 @@ typedef struct ModuleConfig {
 
 	NotificationMode notificationMode = NotificationMode::PER_CHANNEL;
 
+	std::string delegateTo = "hset";
+
 	KeyPattern keyPattern = KeyPattern("");
 
 	bool enableKeyCaching = false;
