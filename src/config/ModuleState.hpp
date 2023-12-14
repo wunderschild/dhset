@@ -8,12 +8,12 @@
 
 #include <optional>
 #include <regex>
-#include <unordered_set>
+#include <unordered_map>
 
-#include "ShrinkStrategy.hpp"
 #include "KeyPattern.hpp"
 #include "NotificationMode.hpp"
 #include "Serializer.hpp"
+#include "ShrinkStrategy.hpp"
 
 typedef struct ModuleConfig {
 	Serializer serializer = Serializer::JSON;
@@ -34,7 +34,7 @@ const static inline auto DEFAULT_CONFIG = ModuleConfig{};
 class ModuleStateHolder {
 public:
 	static ModuleConfig config;
-	static std::unordered_set<std::string> acceptedKeys;
+	static std::unordered_map<std::string, bool> acceptedKeys;
 };
 
 auto ensureKeyCacheSizeInLimits() -> void;

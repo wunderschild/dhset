@@ -9,7 +9,7 @@
 #include "../util/util.hpp"
 
 ModuleConfig ModuleStateHolder::config = ModuleConfig{};
-std::unordered_set<std::string> ModuleStateHolder::acceptedKeys = {};
+std::unordered_map<std::string, bool> ModuleStateHolder::acceptedKeys = {};
 
 auto ensureKeyCacheSizeInLimits() -> void {
 	if (

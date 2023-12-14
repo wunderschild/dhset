@@ -24,7 +24,7 @@ auto setKeyPattern(const char*, RedisModuleString* value, void*,
                    RedisModuleString** err) {
 	try {
 		ModuleStateHolder::config.keyPattern = KeyPattern(fromRedisString(value));
-		ModuleStateHolder::acceptedKeys = {};
+		ModuleStateHolder::acceptedKeys.clear();
 	} catch (const std::regex_error& er) {
 		*err = toRedisString(er.what());
 

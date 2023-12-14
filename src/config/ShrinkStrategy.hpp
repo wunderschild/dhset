@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <unordered_map>
 #include <unordered_set>
 #include <vendor/redismodule.h>
 
@@ -19,23 +20,23 @@ enum class ShrinkStrategy : int {
 
 auto registerKeyCacheShrinkConfigOption(RedisModuleCtx* ctx) -> bool;
 
-template<typename T>
+template<typename K, typename V>
 auto applyStrategy(
-	std::unordered_set<T>& set,
+	std::unordered_map<K, V>& map,
 	const ShrinkStrategy strategy
 ) {
 	switch (strategy) {
 		case ShrinkStrategy::FLUSH:
-			set.clear();
+			map.clear();
 			break;
 		case ShrinkStrategy::HALVE: {
-			auto size = set.size() >> 1;
+			auto size = map.size() >> 1;
 			for (size_t i = 0; i < size; i++) {
-				set.erase(std::begin(set));
+				map.erase(std::begin(map));
 			}
 			break;
 		}
 		case ShrinkStrategy::ONE_OUT:
-			set.erase(std::begin(set));
+			map.erase(std::begin(map));
 	}
 }
