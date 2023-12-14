@@ -1,20 +1,37 @@
-cmake_minimum_required(VERSION 3.22)
+cmake_minimum_required(VERSION 3.24)
 project(dhset CXX)
 
-set(GLOBAL PROPERTY USE_FOLDERS ON)
+cmake_policy(SET CMP0135 NEW)
 
 include(cmake/ClangTidy.cmake)
+include(FetchContent)
 
 set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wno-missing-field-initializers")
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-missing-field-initializers")
 set(CMAKE_CXX_FLAGS_DEBUG "-g")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-find_package(nlohmann_json 3.10.5 REQUIRED)
+set(
+        NLOHMANN_JSON_VERSION "3.11.3"
+        CACHE STRING "nlohmann::json version"
+)
+set(
+        NLOHMANN_JSON_SHA256 "d6c65aca6b1ed68e7a182f4757257b107ae403032760ed6ef121c9d55e81757d"
+        CACHE STRING "nlohmann::json version"
+)
 
-add_library(dhset SHARED
+FetchContent_Declare(json
+        URL https://github.com/nlohmann/json/releases/download/v${NLOHMANN_JSON_VERSION}/json.tar.xz
+        URL_HASH SHA256=${NLOHMANN_JSON_SHA256}
+)
+FetchContent_MakeAvailable(json)
+
+add_library(dhset SHARED)
+
+target_sources(dhset PRIVATE
         src/module.cpp
         src/command/DiffHSet.cpp
         src/command/DiffHSet.hpp
@@ -47,8 +64,22 @@ add_library(dhset SHARED
 clang_tidy(dhset)
 
 target_link_libraries(dhset PRIVATE nlohmann_json::nlohmann_json)
+
 target_include_directories(dhset PRIVATE "${PROJECT_SOURCE_DIR}/src")
 target_include_directories(dhset SYSTEM PRIVATE "${PROJECT_SOURCE_DIR}/include")
+
+set(
+        OUTPUT_LIBC_SUFFIX "unknown"
+        CACHE "Library suffix to specify target libc distribution"
+)
+
+set_target_properties(dhset
+        PROPERTIES LIBRARY_OUTPUT_NAME "dhset-${CMAKE_SYSTEM_PROCESSOR}-${OUTPUT_LIBC_SUFFIX}"
+)
+
+target_compile_definitions(dhset
+        PRIVATE REDISMODULE_API=extern\ "C"
+)
 
 if ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
     add_custom_command(
