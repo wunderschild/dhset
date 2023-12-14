@@ -73,6 +73,10 @@ target_link_libraries(dhset PRIVATE nlohmann_json::nlohmann_json)
 target_include_directories(dhset PRIVATE "${PROJECT_SOURCE_DIR}/src")
 target_include_directories(dhset SYSTEM PRIVATE "${PROJECT_SOURCE_DIR}/include")
 
+if (DHSET_GNU_STATIC)
+    target_link_options(dhset PRIVATE "-static")
+endif ()
+
 set(
         OUTPUT_LIBC_SUFFIX "unknown"
         CACHE STRING "Library suffix to specify target libc distribution"
